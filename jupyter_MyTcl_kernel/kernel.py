@@ -779,8 +779,11 @@ echo "OK"
         return
     def create_jupyter_subprocess(self, cmd,cwd=None,shell=False,env=None,magics=None,outencode=None):
         try:
-            if env==None or len(env)<1:
-                env=os.environ
+            if env==None or len(env)<1:env=os.environ
+            
+            newcwd=self.get_magicsSvalue(magics,'cwd')
+            if len(newcwd.strip())>1:cwd=newcwd
+            if cwd==None:cwd=os.path.abspath('')
             if magics!=None and magics['status']=='' and len(self.addmagicsBkey(magics,'runinterm'))>0:
                 self.inittermcmd(magics)
                 if len(magics['_st']['term'])<1:
@@ -1389,10 +1392,10 @@ class TclKernel(MyKernel):
         if len(self.kernel_info['interpreter']['cmd'])>0:
             interpreter+=[self.kernel_info['interpreter']['cmd']]
             if len(self.kernel_info['interpreter']['clargs'])>0:
-                interpreter+=[self.kernel_info['interpreter']['clargs']]
+                interpreter+=self.kernel_info['interpreter']['clargs']
             interpreter+=[fil_ename]
             if len(self.kernel_info['interpreter']['crargs'])>0:
-                interpreter+=[self.kernel_info['interpreter']['crargs']]
+                interpreter+=self.kernel_info['interpreter']['crargs']
         cmd=[fil_ename]
         if len(interpreter)>0:
             cmd=interpreter
